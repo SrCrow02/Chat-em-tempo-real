@@ -1,0 +1,60 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <script src="//ajax.googleapis.com/ajax/libs/jquery/1.8.1/jquery.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/4.3.0/socket.io.js"></script>
+
+    <link rel="stylesheet" type="text/css" href="style.css">
+
+    <title>Chat realtime</title>
+</head>
+<body>
+    <form id="chat">
+        <input type="text" name="username" placeholder="Digite seu usuario!">
+        <div class="messages">
+
+        </div>
+        <input type="text" name="message" placeholder="Digite sua mensagem!">
+        <button type="submit">Enviar</button>
+    </form>
+
+    <script type="text/javascript">
+        var socket = io('http://localhost:3000') //porta onde o chat esta rodando
+
+        //Colocar a mensagem na tela
+        function renderMessage(message) {
+            $('.messages').append('<div class="message">' + '<strong>' + message.author + ': ' + '</strong>' + message.message + '</div>')
+        }
+
+        //Fazer todos os usuarios conectados verem as mensagens
+        socket.on('receivedMessage', function(message) {
+            renderMessage(message)
+        })
+
+        $('#chat').submit(function(event) {
+            event.preventDefault();
+            
+            //printando o nome do author e a mensagem
+            var author = $('input[name=username]').val();
+            var message = $('input[name=message]').val();
+
+            if(author.length && author.length) {
+                var messageObject = {
+                    author: author,
+                    message, message,
+                }
+
+                //Chamando função e mandando o objeto
+                renderMessage(messageObject);
+
+                //printando
+                socket.emit('sendMessage', messageObject)
+            }
+        })
+    </script>
+</body>
+</html>
